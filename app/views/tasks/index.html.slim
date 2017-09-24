@@ -1,0 +1,28 @@
+h1 Tasks
+table
+  thead
+    tr
+      th ID
+      th Name
+      th Mode Type
+      th Status
+      th Delay
+      th Duration
+      th Cycle count
+      th[colspan="4"] Actions
+  tbody
+    - @tasks.each do |task|
+      tr
+        td = task.id
+        td = task.name
+        td = task.mode_type.humanize
+        td = task.status
+        td = task.delay
+        td = task.duration
+        td = task.cycle_count
+        td = link_to 'Start', start_task_path(task)
+        td = link_to 'Stop', stop_task_path(task)
+        td = link_to 'Edit', edit_task_path(task)
+        td = link_to 'Destroy', task, method: :delete, data: { confirm: 'Are you sure?' }
+br
+= link_to 'New Task', new_task_path

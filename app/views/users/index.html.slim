@@ -1,0 +1,41 @@
+h1 Listing users
+
+table
+  thead
+    tr
+      th Vk user
+      th First name
+      th Last name
+      th Sex
+      th Domain
+      th Screen name
+      th Photo 50
+      th Photo 100
+      th Photo 400 orig
+      th Status
+      th Hidden
+      th
+      th
+      th
+
+  tbody
+    - @users.each do |user|
+      tr
+        td = user.vk_user_id
+        td = user.first_name
+        td = user.last_name
+        td = user.sex
+        td = user.domain
+        td = user.screen_name
+        td = user.photo_50
+        td = user.photo_100
+        td = user.photo_400_orig
+        td = user.status
+        td = user.hidden
+        td = link_to 'Show', user
+        td = link_to 'Edit', edit_user_path(user)
+        td = link_to 'Destroy', user, data: { confirm: 'Are you sure?' }, method: :delete
+
+br
+
+= link_to 'New User', new_user_path

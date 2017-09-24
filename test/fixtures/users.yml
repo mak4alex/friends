@@ -1,0 +1,27 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  vk_user_id: 1
+  first_name: MyString
+  last_name: MyString
+  sex: MyString
+  domain: MyString
+  screen_name: MyString
+  photo_50: MyString
+  photo_100: MyString
+  photo_400_orig: MyString
+  status: MyString
+  hidden: false
+
+two:
+  vk_user_id: 1
+  first_name: MyString
+  last_name: MyString
+  sex: MyString
+  domain: MyString
+  screen_name: MyString
+  photo_50: MyString
+  photo_100: MyString
+  photo_400_orig: MyString
+  status: MyString
+  hidden: false

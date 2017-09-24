@@ -1,0 +1,39 @@
+p#notice = notice
+
+p
+  strong Vk user:
+  = @user.vk_user_id
+p
+  strong First name:
+  = @user.first_name
+p
+  strong Last name:
+  = @user.last_name
+p
+  strong Sex:
+  = @user.sex
+p
+  strong Domain:
+  = @user.domain
+p
+  strong Screen name:
+  = @user.screen_name
+p
+  strong Photo 50:
+  = @user.photo_50
+p
+  strong Photo 100:
+  = @user.photo_100
+p
+  strong Photo 400 orig:
+  = @user.photo_400_orig
+p
+  strong Status:
+  = @user.status
+p
+  strong Hidden:
+  = @user.hidden
+
+= link_to 'Edit', edit_user_path(@user)
+'  |
+= link_to 'Back', users_path

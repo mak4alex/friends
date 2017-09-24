@@ -1,24 +1,9 @@
-# README
-
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+### Friends App. It just spies my friends and collects some statistic...
+#### Global and users stats include
+- Total on-line time
+- Total on-line time percent mark
+- User client platform histogram
+- On-line time per day series plot
+- On-line time per day in week histogram
+- Entry count per day box plot
+- Mobile app usage among mobile users pie
