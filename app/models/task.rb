@@ -5,17 +5,28 @@ class Task < ApplicationRecord
     :error    => 'ERROR'
   }
 
-  MODE_TYPES = {
-    :friends_data_update  => 'FRIENDS_DATA_UPDATE',
-    :online_status_update => 'ONLINE_STATUS_UPDATE',
-    :chart_images_update  => 'CHART_IMAGES_UPDATE'
-  }
+  attr_accessor :logger
 
   after_initialize :set_init_default
   before_create :set_create_default
 
   def self.mode_type_options
-    MODE_TYPES.map { |k, v| [v.humanize, k] }
+    mode_types.map { |k, v| [v.humanize, k] }
+  end
+
+  def self.job_files
+    Dir.entries(jobs_file_path).select { |j| j =~ /_job\.rb$/ && j != 'application_job.rb' }
+  end
+
+  def self.jobs_file_path
+    File.join(Rails.root, 'app', 'jobs')
+  end
+
+  def self.mode_types
+    Task.job_files.map { |jf| jf.gsub(/\_job.rb$/,'') }.inject({}) do |hash, job_name|
+      hash[job_name.to_sym] = job_name.upcase
+      hash
+    end
   end
 
   def start
@@ -54,5 +65,11 @@ class Task < ApplicationRecord
   def set_create_default
     self.status = STATUS[:stopped]
     self.duration = self.cycle_count = 0
+  end
+
+  def set_logger
+    @logger = Logger.new(Rails.root.join('log', "#{self.mode_type}.log"), File::APPEND)
+    @logger.formatter = Logger::Formatter.new
+    @logger
   end
 end

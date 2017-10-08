@@ -4,6 +4,8 @@ class OnlineStatusUpdateJob < ApplicationJob
       user_id: ENV['VK_SPYER_ID'],
       fields:  User::ONLINE_FIELDS
     ).each do |user_data|
+      next if user_data["deactivated"] # "banned"
+
       OnlineStatus.find_or_create_by({
         :vk_user_id => user_data['user_id'],
         :last_seen  => Time.at(user_data['last_seen']['time']),

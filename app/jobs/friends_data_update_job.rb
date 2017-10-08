@@ -1,13 +1,13 @@
 class FriendsDataUpdateJob < ApplicationJob
   def perform(*args)
-    VK::Client.new.friends.get(
-      user_id: ENV['VK_SPYER_ID'],
+    user_ids = User.select(:vk_user_id).map(&:vk_user_id)
+    VKUtil.authorized_client.users.get(
+      user_ids: user_ids,
       fields:  User::DATA_FIELDS
     ).each do |user_data|
       user_params = ActionController::Parameters.new({ :user => user_data })
-      User.find_or_create_by(:vk_user_id => user_data['user_id']) do |user|
-        user.update_attributes(user_params.require(:user).permit(*User::DATA_FIELDS))
-      end
+      user = User.find_by(:vk_user_id => user_data['uid'])
+      user.update_attributes(user_params.require(:user).permit(*User::DATA_FIELDS)) if user
     end
   end
 end
