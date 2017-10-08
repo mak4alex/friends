@@ -9,13 +9,21 @@ class ApplicationJob < ActiveJob::Base
       begin
         block.call
         task.delay > 0 ? sleep(task.delay) : task.stop
+      rescue SocketError, Net::HTTP::Persistent::Error => exc
+        log_exc(task.logger, exc)
+        sleep 60
       rescue Exception => exc
-        task.logger.error(exc.message)
-        task.logger.error(exc.backtrace[0..10].join("\n"))
+        log_exc(task.logger, exc)
         task.error
       ensure
         task.cycle_update(start_time)
       end
     end
+  end
+
+  def log_exc(logger, exc)
+    logger.error(exc.class.name)
+    logger.error(exc.message)
+    logger.error(exc.backtrace[0..10].join("\n"))
   end
 end
