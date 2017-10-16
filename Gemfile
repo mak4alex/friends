@@ -33,6 +33,7 @@ gem 'slim-rails', '~> 3.1', '>= 3.1.2'
 gem 'vkontakte_api', '~> 1.4'
 gem 'figaro', '~> 1.1', '>= 1.1.1'
 gem 'mechanize', '~> 2.7', '>= 2.7.5'
+gem 'bulk_insert', '~> 1.0'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
