@@ -8,8 +8,7 @@ class ApplicationJob < ActiveJob::Base
       start_time = Time.now.to_i
       begin
         block.call
-        task.delay > 0 ? sleep(task.delay) : task.stop
-      rescue SocketError, Faraday::ConnectionFailed, Net::HTTP::Persistent::Error => exc
+      rescue SocketError, Faraday::ConnectionFailed, Faraday::TimeoutError, Net::HTTP::Persistent::Error => exc
         log_exc(task.logger, exc)
         sleep(60)
       rescue Exception => exc
@@ -18,6 +17,7 @@ class ApplicationJob < ActiveJob::Base
       ensure
         task.cycle_update(start_time)
       end
+      task.delay > 0 ? sleep(task.delay) : task.stop
     end
   end
 
