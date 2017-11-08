@@ -39,6 +39,10 @@ class Task < ApplicationRecord
     self.status == STATUS[:running]
   end
 
+  def stopping?
+    !running?
+  end
+
   def stop
     self.update_attribute(:status, Task::STATUS[:stopped])
   end
@@ -68,8 +72,10 @@ class Task < ApplicationRecord
   end
 
   def set_logger
-    @logger = Logger.new(Rails.root.join('log', "#{self.mode_type}.log"), File::APPEND)
-    @logger.formatter = Logger::Formatter.new
+    unless @logger
+      @logger = Logger.new(Rails.root.join('log', "#{self.mode_type}.log"), File::APPEND)
+      @logger.formatter = Logger::Formatter.new
+    end
     @logger
   end
 end

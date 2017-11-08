@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170915054338) do
+ActiveRecord::Schema.define(version: 20171108191133) do
 
   create_table "online_statuses", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" do |t|
     t.integer "vk_user_id"
@@ -45,6 +45,12 @@ ActiveRecord::Schema.define(version: 20170915054338) do
     t.boolean "hidden"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "about"
+    t.string "birthday"
+    t.boolean "can_see_all_posts"
+    t.boolean "can_comment_on_wall"
+    t.string "deactivated"
+    t.index ["vk_user_id"], name: "index_users_on_vk_user_id", unique: true
   end
 
 end
