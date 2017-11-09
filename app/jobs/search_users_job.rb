@@ -52,7 +52,7 @@ class SearchUsersJob < ApplicationJob
         end
       end
 
-      task.log.info("query: '#{name}', found: #{res_size}, total: #{total}")
+      task.log.info("query: '#{name}', found: #{found}, total: #{total}")
       task.sleep(3)
       break if task.stopping?
     end
