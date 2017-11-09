@@ -1,28 +1,33 @@
 class SearchUsersJob < ApplicationJob
   LIMIT = 1000
 
-  def perform(*args)
-    task = args.first
-    task.set_logger
-    total_count = 0
-    names = 
-    client = VKUtil.authorized_client
+  def perform(task)
+    total = 0
+    names   = File.read(File.join(Rails.root, 'lib', 'resources', 'names.txt')).split
+    client  = VKUtil.authorized_client
 
     loop do
-      name = names.sample      
-      sleep(5)
-      response = client.users.search(
-        :q       => name,
-        :online  => User::API_TRUE,
-        :city    => User::CITIES['MINSK'], 
-        :country => User::COUNTRIES['BELARUS'],
-        :fields  => User::DATA_FIELDS, 
-        :count   => LIMIT, 
-        :offset  => 0
-      )
+      name = names.sample
+      response = []
+      begin
+        response = client.users.search(
+          :q       => name,
+          :online  => User::API_TRUE,
+          :city    => User::CITIES['MINSK'], 
+          :country => User::COUNTRIES['BELARUS'],
+          :fields  => User::DATA_FIELDS, 
+          :count   => LIMIT, 
+          :offset  => 0
+        )        
+      rescue Exception => exc
+        task.log.error(exc.class.name)
+        task.log.error(exc.message)
+        task.log.error(exc.backtrace[0..10].join("\n"))
+        response = []
+      end        
 
-      res_users_size = response.shift
-      names.delete(name) if res_users_size < LIMIT
+      found = response.shift.to_i
+      total += response.size
 
       User.transaction do
         response.each do |user_hash|
@@ -47,9 +52,10 @@ class SearchUsersJob < ApplicationJob
         end
       end
 
-      total_count += res_users_size
-      task.logger.info("name '#{name}', res: #{res_users_size}, total: #{total_count}, names left #{names.size}")
+      task.log.info("query: '#{name}', found: #{res_size}, total: #{total}")
+      task.sleep(3)
       break if task.stopping?
-    end 
+    end
+    task.log.info('Successfully done')
   end
 end

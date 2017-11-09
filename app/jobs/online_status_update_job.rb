@@ -2,7 +2,7 @@ class OnlineStatusUpdateJob < ApplicationJob
 
   before_enqueue do |job|
     @@statuses = Set.new
-    @@user_ids = User.select(:vk_user_id).map(&:vk_user_id)
+    @@user_ids = User.select(:vk_user_id).where(id:[85..133]).map(&:vk_user_id)
   end
 
   def perform(*args)

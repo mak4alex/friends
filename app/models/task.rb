@@ -5,8 +5,6 @@ class Task < ApplicationRecord
     :error    => 'ERROR'
   }
 
-  attr_accessor :logger
-
   after_initialize :set_init_default
   before_create :set_create_default
 
@@ -51,6 +49,13 @@ class Task < ApplicationRecord
     self.update_attribute(:status, Task::STATUS[:error])
   end
 
+  def sleep(time = self.delay)
+    time.downto(0) do
+      Kernel.sleep(1)
+      break if stopping?
+    end
+  end
+
   def get_job_class
     "#{self.mode_type}_job".camelize.constantize
   end
@@ -71,7 +76,7 @@ class Task < ApplicationRecord
     self.duration = self.cycle_count = 0
   end
 
-  def set_logger
+  def log
     unless @logger
       @logger = Logger.new(Rails.root.join('log', "#{self.mode_type}.log"), File::APPEND)
       @logger.formatter = Logger::Formatter.new
