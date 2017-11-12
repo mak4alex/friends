@@ -22,6 +22,8 @@
 config/secrets.yml.key
 
 # Ignore application configuration
-/config/application.yml
+config/application.yml
 
 public/assets/
+
+.idea/

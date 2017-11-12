@@ -1,10 +1,13 @@
 class VKUtil
+  API_TRUE = 1
+  API_FALSE = 0
+
   def self.authorized_client(scope: [:friends, :groups])
     agent = Mechanize.new
     agent.get VkontakteApi.authorization_url(scope: scope, type: :client)
 
     agent.page.form_with(action: /login.vk.com/) do |form|
-     form.email = ENV['VK_PHOHE']
+     form.email = ENV['VK_PHONE']
      form.pass  = ENV['VK_PASSWORD']
     end.submit
 

@@ -3,6 +3,7 @@ class SearchUsersJob < ApplicationJob
 
   def perform(task)
     total = 0
+    empty_response_count = 0
     names   = File.read(File.join(Rails.root, 'lib', 'resources', 'names.txt')).split
     client  = VKUtil.authorized_client
 
@@ -10,9 +11,10 @@ class SearchUsersJob < ApplicationJob
       name = names.sample
       response = []
       begin
+        task.sleep(3)
         response = client.users.search(
           :q       => name,
-          :online  => User::API_TRUE,
+          :online  => VKUtil::API_TRUE,
           :city    => User::CITIES['MINSK'], 
           :country => User::COUNTRIES['BELARUS'],
           :fields  => User::DATA_FIELDS, 
@@ -28,6 +30,7 @@ class SearchUsersJob < ApplicationJob
 
       found = response.shift.to_i
       total += response.size
+      response.size > 0 ? empty_response_count = 0 : empty_response_count += 1
 
       User.transaction do
         response.each do |user_hash|
@@ -45,16 +48,15 @@ class SearchUsersJob < ApplicationJob
             :hidden    => user_hash['hidden'],
             :about     => user_hash['about'],
             :birthday  => user_hash['bdate'],
-            :can_see_all_posts   => user_hash['can_see_all_posts'] == User::API_TRUE,
-            :can_comment_on_wall => user_hash['wall_comments']     == User::API_TRUE,
+            :can_see_all_posts   => user_hash['can_see_all_posts'] == VKUtil::API_TRUE,
+            :can_comment_on_wall => user_hash['wall_comments']     == VKUtil::API_TRUE,
             :deactivated         => user_hash['deactivated'],
           )
         end
       end
 
       task.log.info("query: '#{name}', found: #{found}, total: #{total}")
-      task.sleep(3)
-      break if task.stopping?
+      break if task.stopping? || empty_response_count > 100
     end
     task.log.info('Successfully done')
   end

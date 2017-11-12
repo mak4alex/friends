@@ -20,7 +20,7 @@ class OnlineStatusUpdateJob < ApplicationJob
           :vk_user_id => user_data['uid'],
           :last_seen  => Time.at(user_data['last_seen']['time']),
           :platform   => user_data['last_seen']['platform'],
-          :online     => user_data['online'] == User::ONLINE,
+          :online     => user_data['online'] == VKUtil::API_TRUE,
           :online_mobile => user_data.key?('online_mobile')
         })
       end
