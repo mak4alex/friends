@@ -3,9 +3,9 @@ class GetUsersPostsJob < ApplicationJob
 
   def perform(task)
     client  = VKUtil.authorized_client
-    users = User.select(:domain, :updated_at)
+    users = User.select(:id, :domain)
         .where(:can_see_all_posts => true)
-        .order(:updated_at => :desc)
+        .order(:updated_at)
         .limit(LIMIT)
 
     users.each do |user|
@@ -30,7 +30,8 @@ class GetUsersPostsJob < ApplicationJob
         end
 
         wall_posts_count = response.shift.to_i
-        enough = (offset + LIMIT) < wall_posts_count
+        enough = offset > wall_posts_count
+        offset += response.size
 
         Post.transaction do
           response.each do |post_hash|
@@ -41,7 +42,7 @@ class GetUsersPostsJob < ApplicationJob
                 :from_id    => post_hash['from_id'])
             post.update(
                 :body            => body,
-                :site_created_at => post_hash['date'],
+                :site_created_at => Time.at(post_hash['date']),
                 :post_kind       => post_hash['post_type'],
                 :likes_count     => post_hash.dig('likes', 'count'),
                 :reposts_count   => post_hash.dig('reposts', 'count'),
@@ -51,11 +52,10 @@ class GetUsersPostsJob < ApplicationJob
           end
         end
 
-        break task.stopping? || response.empty? || enough
-        offset += LIMIT
+        break if task.stopping? || response.empty? || enough
       end
 
-      task.log.info("Post updating for: #{name} done, found: #{wall_posts_count}")
+      task.log.info("Post updating for: #{user.domain} done, found: #{wall_posts_count}")
       user.touch
       break if task.stopping?
     end
